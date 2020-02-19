@@ -435,3 +435,23 @@ function TIC()
 end
 
 inicializa()      
+
+
+-- Fazer a parte da espada
+-- - Adiciona o sprite da espada: 328
+-- - criaEspada()
+-- - adicionar atributo visivel para os objetos
+-- - if btn(4) and jogador.direcao then
+--     - espada.atualiza()
+--     - jogador.x + 8
+--     - jogador.y + 8
+--     - colisoes
+--         - deixaPassar
+--     - tempoParaDesaparecer (decrementa ele dentro do atualizaJogador)
+--         - se <= 0, espada.visivel = false
+-- - atualizar a posicao da sprite da espada de acordo com a posicao do jogador 
+--     - dentro do espada.atualiza()
+-- - https://cursos.alura.com.br/course/lua-criando-mapas-e-ataques/task/35565
+
+-- - *refatorar o colisoes para deixarPassar por padrão 
+-- - 

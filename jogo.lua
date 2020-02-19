@@ -26,20 +26,20 @@ TIPO_INIMIGO = Constantes.INIMIGO
 -----------------------
 -- Mapa
 -----------------------
-mapa = {
-	x = 0,
-	y = 0,	
-}
-
 camera = {
     x = 0,
     y = 0,
 }
-
-function mapa.desenha()
+function camera.atualiza()
     camera.x = (jogador.x // 240) * 240
     camera.y = (jogador.y // 136) * 136
-    
+end 
+
+mapa = {
+	x = 0,
+	y = 0,	
+}
+function mapa.desenha()
     local blocoX = camera.x / 8
     local blocoY = camera.y / 8
     
@@ -371,6 +371,7 @@ end
 -----------------------
 
 function atualiza()
+    camera.atualiza()
    jogador.checaMovimento()
 			
 							
@@ -391,11 +392,15 @@ end
 
 function inicializa()
    objetos = {}
-  	local chave = criaChave(7,5)
+  	local chave = criaChave(8,5)
    table.insert(objetos, chave)
+
+   local chave2 = criaChave(8, 55)
+   table.insert(objetos, chave2)
 
    local inimigo = criaInimigo(9,9)
    table.insert(objetos, inimigo)
+   
 
    jogador = criaJogador()
 end

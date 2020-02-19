@@ -4,20 +4,24 @@
 -- script: lua
 
 Constantes = {
-	LARGURA_DA_TELA = 240,
-	ALTURA_DA_TELA =138,
-	SPRITE_JOGADOR = 260,
-	SPRITE_INIMIGO = 292,
-	SPRITE_ESPADA = 430,
- JOGADOR = 'Jogador',
- INIMIGO = 'Inimigo',
- CHAVE = 'Chave',
- DIRECAO = {
-     CIMA = 1,
-     BAIXO = 2,
-     ESQUERDA = 3,
-     DIREITA = 4
- }
+    LARGURA_DA_TELA = 240,
+    ALTURA_DA_TELA =138,
+    SPRITE_JOGADOR = 260,
+    SPRITE_INIMIGO = 292,
+    SPRITE_ESPADA = 430,
+    JOGADOR = 'Jogador',
+    INIMIGO = 'Inimigo',
+    CHAVE = 'Chave',
+    DIRECAO = {
+        CIMA = 1,
+        BAIXO = 2,
+        ESQUERDA = 3,
+        DIREITA = 4
+    },
+    ESTADOS = {
+        PARADO = 'parado',
+        PERSEGUINDO = 'perseguindo',
+    }
 }
 
 TIPO_JOGADOR = Constantes.JOGADOR
@@ -173,13 +177,14 @@ function criaInimigo(linha, coluna)
  colisoes[Constantes.INIMIGO] = deixaPassar
 
 	local inimigo = {
-		tipo = Constantes.INIMIGO,
+        tipo = Constantes.INIMIGO,
+        estado = Constantes.ESTADOS.PARADO,
 		sprite = Constantes.SPRITE_INIMIGO,
 		x = posicaoNoMapa(coluna),
-  y = posicaoNoMapa(linha),
-  corDeFundo = 14,
-  quadroDeAnimacao = 1,
-  colisoes = colisoes,
+        y = posicaoNoMapa(linha),
+        corDeFundo = 14,
+        quadroDeAnimacao = 1,
+        colisoes = colisoes,
 	}
  
 	return inimigo
@@ -189,46 +194,65 @@ function fazColisaoDoJogadorComOInimigo(indice)
 	return true
 end
 
-function 	atualizaInimigo(inimigo) 
-    local VELOCIDADE_INIMIGO = 0.5
-    local delta = {
-        deltaX = 0,
-        deltaY = 0
-    }
+function distancia(inimigo, jogador) 
+    local distanciaX = inimigo.x - jogador.x
+    local distanciaY = inimigo.y - jogador.y
+    local distancia = distanciaX * distanciaX + distanciaY * distanciaY
 
-	if jogador.y > inimigo.y then
-        inimigo.direcao = Constantes.DIRECAO.BAIXO
-        delta.deltaY = VELOCIDADE_INIMIGO
-	elseif jogador.y < inimigo.y then
-        inimigo.direcao = Constantes.DIRECAO.CIMA
-        delta.deltaY = -VELOCIDADE_INIMIGO
-    end
+    return math.sqrt(distancia)
+end
 
-    tentaMoverPara(inimigo, delta)
-    delta = {
-        deltaX = 0,
-        deltaY = 0
-    }
-	if jogador.x > inimigo.x then
-        inimigo.direcao = Constantes.DIRECAO.DIREITA
-        delta.deltaX = VELOCIDADE_INIMIGO
-	elseif jogador.x < inimigo.x then
-        inimigo.direcao = Constantes.DIRECAO.ESQUERDA
-        delta.deltaX = -VELOCIDADE_INIMIGO
-    end
+function atualizaInimigo(inimigo) 
+
     
-    tentaMoverPara(inimigo, delta)
-	
-	local AnimacaoInimigo = {
-		{288, 290},
-		{292, 294},
-		{296, 298},
-		{300, 302},
-	}
-	
-	local quadros = AnimacaoInimigo[inimigo.direcao]
-	local quadro = math.floor(inimigo.quadroDeAnimacao)
-	inimigo.sprite = quadros[quadro]
+    if distancia(inimigo, jogador) < 48 then
+        -- ta perto!!!
+        inimigo.estado = Constantes.ESTADOS.PERSEGUINDO
+    else 
+        inimigo.estado = Constantes.ESTADOS.PARADO
+    end
+
+    if inimigo.estado == Constantes.ESTADOS.PERSEGUINDO then
+        local VELOCIDADE_INIMIGO = 0.5
+        local delta = {
+            deltaX = 0,
+            deltaY = 0
+        }
+
+        if jogador.y > inimigo.y then
+            inimigo.direcao = Constantes.DIRECAO.BAIXO
+            delta.deltaY = VELOCIDADE_INIMIGO
+        elseif jogador.y < inimigo.y then
+            inimigo.direcao = Constantes.DIRECAO.CIMA
+            delta.deltaY = -VELOCIDADE_INIMIGO
+        end
+
+        tentaMoverPara(inimigo, delta)
+        delta = {
+            deltaX = 0,
+            deltaY = 0
+        }
+        if jogador.x > inimigo.x then
+            inimigo.direcao = Constantes.DIRECAO.DIREITA
+            delta.deltaX = VELOCIDADE_INIMIGO
+        elseif jogador.x < inimigo.x then
+            inimigo.direcao = Constantes.DIRECAO.ESQUERDA
+            delta.deltaX = -VELOCIDADE_INIMIGO
+        end
+        
+        tentaMoverPara(inimigo, delta)
+        
+        local AnimacaoInimigo = {
+            {288, 290},
+            {292, 294},
+            {296, 298},
+            {300, 302},
+        }
+        
+        local quadros = AnimacaoInimigo[inimigo.direcao]
+        local quadro = math.floor(inimigo.quadroDeAnimacao)
+        inimigo.sprite = quadros[quadro]
+    end
 end
 
 -----------------------
